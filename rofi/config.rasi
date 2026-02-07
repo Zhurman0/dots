@@ -1,0 +1,17 @@
+// Rofi config for SwagBang modified by Mr Green
+// 
+configuration {
+  modi: "drun";
+  font: "JetBrains Mono 12, Symbols Nerd Font Mono 12";
+  show-icons: true;
+  icon-theme: "Papirus";  // or any icon theme you use
+  location: 0;             // center of screen
+  columns: 1;
+  lines: 6;
+  width: 2;
+  padding: 20;
+  disable-history: false;
+  sidebar-mode: false;
+}
+
+@theme "~/.config/rofi/theme.rasi"

@@ -1,0 +1,9 @@
+{
+    "colorscheme": "gruvbox",
+    "lsp.autocompleteDetails": true,
+    "lsp.formatOnSave": false,
+    "lsp.server": "zig=zls",
+    "mkparents": true,
+    "tabsize": 2,
+    "tabstospaces": true
+}

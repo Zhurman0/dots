@@ -1,0 +1,150 @@
+# ---Theme---            border   bg       text     ind      childbd
+client.focused           #728394  #728394  #233241  #728394  #728394
+client.focused_inactive  #728394  #728394  #233241  #233241  #233241
+client.unfocused         #233241  #233241  #8A8E92  #233241  #233241
+client.urgent            #2E3E4F  #233241  #EEEEEE  #2E3E4F  #2E3E4F
+
+
+font pango:DejaVu Sans Serif 11
+
+gaps inner 4
+gaps horizontal -1
+gaps vertical -4
+
+default_border pixel 3
+
+for_window [class=".*"] title_format "  %title"
+
+# ---Variables---
+set $super Mod4
+set $alt   Mod1
+set $i3path $HOME/.config/i3
+
+
+# ---Workspaces---
+set $ws1 "A1"
+set $ws2 "A2"
+set $ws3 "I1"
+set $ws4 "I2"
+
+workspace $ws1 output HDMI-A-1
+workspace $ws2 output HDMI-A-1
+workspace $ws3 output HDMI-A-1
+workspace $ws4 output HDMI-A-1
+#workspace $ws3 output VGA-1-1
+#workspace $ws4 output VGA-1-1
+
+mode "workspaces" {
+    bindsym 1  workspace $ws1
+    bindsym 2  workspace $ws2
+    bindsym 3  workspace $ws3
+    bindsym 4  workspace $ws4
+
+    bindsym h  workspace next
+    bindsym l  workspace prev
+    bindsym j  workspace back_and_forth
+
+    
+    bindsym Shift+1  move container to workspace $ws1
+    bindsym Shift+2  move container to workspace $ws2
+    bindsym Shift+3  move container to workspace $ws3
+    bindsym Shift+4  move container to workspace $ws4
+    
+    bindsym Shift+h  move container to workspace next
+    bindsym Shift+l  move container to workspace prev
+    bindsym Shift+j  move container to workspace back_and_forth
+
+
+    bindsym $alt+q  mode "default"
+}
+
+bindsym $alt+w  mode "workspaces"
+
+
+# ---Rules---
+assign [class="iMeDesktop"]   $ws3
+assign [class="Com.dec05eba.gpu_screen_recorder"] $ws1
+
+assign [class="^steam$"]      $ws2
+assign [class="PortProton"]   $ws1
+assign [class="gamescope"]    $ws1
+assign [class="Terraria"]     $ws1
+assign [class="^steam_app_322170$"] $ws1
+assign [class="Sober"]        $ws1
+assign [class="PropertiesLauncher"] $ws1
+assign [class="Minecraft"]    $ws1
+
+for_window [class="PortProton"] floating enable
+
+
+# ---Keybinds---
+bindsym $super+t  exec alacritty
+bindsym $super+w  exec firefox
+bindsym $super+f  exec thunar
+bindsym $super+e  exec l3afpad
+bindsym $super+r  exec rofi -show drun
+bindsym $super+c  exec rofi -show calc -superi calc -no-show-match -no-sort
+bindsym $super+q  kill
+
+bindsym Print             exec scrot -s -f '/tmp/scrot/%Y-%m-%d_%H-%M-%S.png' -e 'xclip -selection clipboard -t image/png -i $f'
+bindsym Shift+Print       exec scrot -u '/tmp/scrot/%Y-%m-%d_%H-%M-%S.png' -e 'xclip -selection clipboard -t image/png -i $f'
+bindsym Ctrl+Shift+Print  exec scrot '/tmp/scrot/%Y-%m-%d_%H-%M-%S.png' -e 'xclip -selection clipboard -t image/png -i $f'
+
+bindsym XF86AudioLowerVolume  exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym XF86AudioRaiseVolume  exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym XF86AudioMute         exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+
+bindsym $super+Shift+r  restart
+
+
+# ---Window compositing---
+bindsym $alt+v  split vertical
+bindsym $alt+h  split horizontal
+bindsym $alt+t  layout toggle tabbed split
+bindsym $alt+f  floating toggle
+bindsym $alt+m  fullscreen toggle
+floating_modifier $alt
+
+focus_follows_mouse no
+bindsym $super+h       focus left
+bindsym $super+j       focus down
+bindsym $super+k       focus up
+bindsym $super+l       focus right
+
+
+# ---Resize and moving---
+mode "resizer" {
+    bindsym h  resize shrink width  10 px
+    bindsym j  resize grow   height 10 px
+    bindsym k  resize shrink height 10 px
+    bindsym l  resize grow   width  10 px
+
+    bindsym Shift+h  resize shrink width  1 px
+    bindsym Shift+j  resize grow   height 1 px
+    bindsym Shift+k  resize shrink height 1 px
+    bindsym Shift+l  resize grow   width  1 px
+
+
+    bindsym $alt+h  move left  10 px 
+    bindsym $alt+k  move up    10 px
+    bindsym $alt+j  move down  10 px
+    bindsym $alt+l  move right 10 px
+
+    bindsym $alt+Shift+h  move left  1 px 
+    bindsym $alt+Shift+k  move up    1 px
+    bindsym $alt+Shift+j  move down  1 px
+    bindsym $alt+Shift+l  move right 1 px
+
+
+    bindsym $alt+q  mode "default"
+}
+
+bindsym $alt+r  mode "resizer"
+
+
+# ---Autostart---
+exec --no-startup-id  picom
+exec --no-startup-id  feh --bg-scale $i3path/wp16x9 # $i3path/wp4x3
+exec --no-startup-id  setxkbmap -layout "us,ru" -option "grp:alt_shift_toggle"
+exec --no-startup-id  $i3path/startpanel.sh
+exec --no-startup-id  $i3path/i3basicsetup.sh
