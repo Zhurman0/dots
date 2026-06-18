@@ -26,7 +26,7 @@
             
                     { "type": "cpu",     "key": "│ CPU          │ ", "showPeCoreCount": true },
                     { "type": "memory",  "key": "│ RAM          │ " },
-                    { "type": "gpu",     "key": "│ GPU          │ ", "format": "{vendor} {name}" },
+                    { "type": "gpu",     "key": "│ GPU          │ ", "format": "{vendor} {name}", "hideType": "integrated" },
             
                     { "type": "custom",  "key": "├──────────────┤" },
             
