@@ -9,26 +9,12 @@ in {
     echo "[hm-git] Syncing configs..."
 
 
-    # Parse arguments
-    custom_msg=""
-    do_push=1
-
-    while [ $# -gt 0 ]; do
-        case "$1" in
-            --msg)
-                shift
-                custom_msg="$1"
-                ;;
-            --no-push)
-                do_push=0
-                ;;
-        esac
-        shift
-    done
+    # env variables
+    custom_msg="''${HM_SYNC_MSG:-}"
+    no_push=''${HM_SYNC_NOPUSH:-}
 
 
     # Sync files
-    rm -rf "${src}/home-manager"
     cp -rf "${src}/" "${repo}/"
     cd "${repo}"
 
@@ -53,18 +39,17 @@ in {
     echo "[hm-git] Changes committed."
 
 
-    # Push
-    if [ "$do_push" -eq 0 ]; then
-        echo "[hm-git] Push skipped."
+    # Push logic
+    if [ -n "$no_push" ]; then
+        echo "[hm-git] Push skipped due to HM_SYNC_NOPUSH."
         exit 0
     fi
 
     if ! nc -z -w 2 github.com 443 2>/dev/null; then
-        echo "[hm-git] GitHub unreachable."
+        echo "[hm-git] GitHub unreachable, skipping push."
     else
         git push origin HEAD:alpine
     fi
-
 
     echo "[hm-git] Done."
   '';
