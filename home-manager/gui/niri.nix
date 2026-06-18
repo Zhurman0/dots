@@ -1,7 +1,7 @@
 { ... }:
 
 let
-    inherit (import ../theme.nix) colors cursor wallpaper;
+    inherit (import ./theme.nix) colors cursor wallpaper;
 in {
     xdg.configFile."niri/config.kdl".text = ''
         layout {

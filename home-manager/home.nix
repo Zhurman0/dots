@@ -6,10 +6,12 @@
         ./gui/waybar.nix
         ./gui/rofi.nix
         ./gui/foot.nix
-        ./gui/fish.nix
         ./gui/gtk.nix
         
-        ./git.nix
+        ./sh/fish.nix
+        ./sh/fastfetch.nix
+        
+        ./mod/git.nix
     ];
 
 

@@ -1,7 +1,7 @@
 { ... }:
 
 let
-    colors = (import ../theme.nix).colors;
+    colors = (import ./theme.nix).colors;
 in {
     xdg.configFile."waybar/config.jsonc".text = ''
         {

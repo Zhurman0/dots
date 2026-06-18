@@ -1,7 +1,7 @@
 { ... }:
 
 let
-    inherit (import ../theme.nix) cursor gtk;
+    inherit (import ./theme.nix) cursor gtk;
 in
 {
     xdg.configFile."gtk-3.0/settings.ini".text = ''
