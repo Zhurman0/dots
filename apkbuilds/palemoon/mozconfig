@@ -1,0 +1,40 @@
+_BUILD_64=1
+_GTK_VERSION=3
+
+
+ac_add_options --enable-application=palemoon
+ac_add_options --prefix=/usr
+ac_add_options --host=$CBUILD
+ac_add_options --target=$CHOST
+mk_add_options MOZ_OBJDIR="$builddir/obj"
+#mk_add_options MOZ_MAKE_FLAGS="-j1"
+
+export MOZ_PGO=1
+ac_add_options --enable-optimize="$CFLAGS"
+ac_add_options --enable-default-toolkit=cairo-gtk3
+ac_add_options --enable-devtools
+ac_add_options --enable-av1
+ac_add_options --with-pthreads
+ac_add_options --with-system-ffi
+
+
+ac_add_options --disable-strip
+ac_add_options --disable-install-strip
+ac_add_options --disable-debug
+ac_add_options --disable-debug-symbols
+ac_add_options --disable-crashreporter
+ac_add_options --disable-tests
+ac_add_options --disable-jemalloc
+ac_add_options --disable-webrtc
+ac_add_options --disable-gamepad
+ac_add_options --disable-necko-wifi
+ac_add_options --disable-updater
+ac_add_options --disable-npapi
+
+
+ac_add_options --enable-official-branding
+export MOZILLA_OFFICIAL=1
+
+ac_add_options --x-libraries=/usr/lib
+
+export MOZ_PKG_SPECIAL=gtk3

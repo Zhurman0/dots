@@ -1,0 +1,90 @@
+# Maintainer: Zhurman <svyat0063@gmail.com>
+
+_flavor="em355"
+pkgname=linux-$_flavor
+pkgver=7.2.13
+_kernver=${pkgver}
+pkgrel=2
+pkgdesc="Specific linux kernel for eM355"
+
+url="https://www.kernel.org"
+arch="x86_64"
+license="GPL-2.0-only"
+
+_depends_dev="perl gmp-dev mpc1-dev mpfr-dev elfutils-dev bash flex bison zstd"
+makedepends="$_depends_dev sed installkernel bc linux-headers openssl-dev>3 mawk
+	diffutils elfutils findutils zstd pahole python3 gcc>=13.1.1_git20230624 bpftool
+"
+_menuconfig_depends="flex bison ncurses-dev"
+
+options="!strip !check"
+source="
+	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
+	$_flavor.config
+"
+builddir="$srcdir"/linux-$_kernver
+
+
+prepare() {
+	default_prepare
+
+	cp "$startdir/$_flavor.config" "$builddir"/.config
+
+	scripts/config --file "$builddir"/.config \
+		--set-str LOCALVERSION "-$pkgrel-$_flavor" \
+		--disable LOCALVERSION_AUTO
+}
+
+build() {
+	unset LDFLAGS CFLAGS CPPFLAGS CXXFLAGS
+
+	make -j2
+}
+
+package() {
+	local _bootdir="$pkgdir/boot"
+	local _moddir="$pkgdir/lib/modules/$pkgver-$pkgrel-$_flavor"
+
+	install -Dm 644 "$builddir"/arch/x86/boot/bzImage "$_bootdir/vmlinuz-$_flavor"
+	install -Dm 644 "$builddir"/System.map            "$_bootdir/boot/System.map-$_kernver-$_flavor"
+	install -Dm 644 "$builddir"/.config               "$_bootdir/boot/config-$_kernver-$_flavor"
+
+	install -Dm 644 "$builddir"/modules.builtin         -t "$_moddir"
+	install -Dm 644 "$builddir"/modules.builtin.modinfo -t "$_moddir"
+	ln -sf "/boot/vmlinuz-$_flavor" "$_moddir/vmlinuz"
+}
+
+
+updateconfig() {	
+	makedepends="$_menuconfig_depends"
+
+	if ! [ -d "$builddir" ]; then
+		deps && fetch && unpack
+	fi
+
+	prepare
+
+	cd "$builddir"
+	make menuconfig -j2
+
+	cp "$builddir"/.config "$startdir/$_flavor.config" && checksum
+}
+
+listnewconfig() {	
+	makedepends="$_menuconfig_depends"
+
+	if ! [ -d "$builddir" ]; then
+		deps && fetch && unpack
+	fi
+
+	prepare
+
+	cd "$builddir"
+	make listnewconfig -j2
+}
+
+
+sha512sums="
+9ef46650e7febc8e6e96fe000f0ddaec29ccd8d26375f6eec8d5e02fe6b454c2b631caa9c5a2caf1260ca3897007c0b1cf2c8b1cc38e04492f34eca423ea3440  linux-7.2.13.tar.xz
+dfb5c1ecdae7155f157eae12588bf42a2679fc7d7e6784b6e39505f6962ccbe1442aaf2342a4396bd1a9ba2f471f973d11d0107aa1a25ada1d35b854cac3fe12  em355.config
+"

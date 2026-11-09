@@ -1,0 +1,115 @@
+# Maintainer: Zhurman <svyat0063@gmail.com>
+pkgname=palemoon
+pkgver=35.0.3
+_pm_tag="Release"
+_uxp_tag="RB_20261027"
+pkgrel=2
+pkgdesc="The Private, Secure and Fully Customizable Open Source Web Browser"
+
+url="www.palemoon.org"
+arch="all"
+license="MPL-2.0"
+
+#!check: test runner simply launches the browser
+options="!check"
+makedepends="
+	python3 doxygen m4 yasm nasm tar zip unzip perl
+
+	gtk+3.0-dev dbus-dev mesa-dev alsa-lib-dev libxt-dev libffi-dev
+	at-spi2-core-dev zlib-dev openssl-dev sqlite-dev pulseaudio-dev 
+"
+subpackages="$pkgname-dev"
+source="
+	https://repo.palemoon.org/MoonchildProductions/Pale-Moon/archive/${pkgver}_$_pm_tag.tar.gz
+	https://repo.palemoon.org/MoonchildProductions/UXP/archive/$_uxp_tag.tar.gz
+
+	mozconfig
+	palemoon.desktop
+"
+
+builddir="$srcdir"/pale-moon
+_mozappdir=/usr/lib/$pkgname-$pkgver
+_icons=browser/chrome/icons
+
+# help shared-object scanner to find the libs
+ldpath="$_mozappdir"
+sonameprefix="$pkgname:"
+
+
+prepare() {
+	default_prepare
+
+	# Replace glibc-specific off64_t with off_t (it's already 64-bit) in UXP media code.
+	# musl and BSD libcs do not provide off64_t, and UXP's media backend
+	# still references it in some legacy files.
+	files=$(grep -lr off64 "$srcdir"/uxp/media || true)
+
+	if [ -n "$files" ]; then
+	    sed -i 's/\boff64_t\b/off_t/g' $files
+	fi
+
+
+	rm -rf "$builddir"/platform
+	ln -s "$srcdir"/uxp "$builddir"/platform
+
+	export CBUILD CHOST CFLAGS builddir
+	envsubst < "$srcdir"/mozconfig > "$builddir"/.mozconfig
+}
+
+build() {
+	export MOZBUILD_STATE_PATH="$srcdir"/mozbuild
+	export MOZ_NOSPAM=1
+	export LDFLAGS="$LDFLAGS -Wl,-rpath,$_mozappdir"
+	
+	./mach build
+}
+
+package() {
+	DESTDIR="$pkgdir" ./mach install
+
+	local _png
+	for _png in "$pkgdir/$_mozappdir/browser/chrome/icons/default"/default*.png; do
+		local i=${_png%.png}
+		i=${i##*/default}
+		install -d "$pkgdir/usr/share/icons/hicolor/${i}x${i}/apps"
+		ln -s "$_mozappdir/browser/chrome/icons/default/default$i.png" \
+			"$pkgdir/usr/share/icons/hicolor/${i}x${i}/apps/$pkgname.png"
+	done
+
+	install -d "$pkgdir/usr/share/icons/hicolor/128x128/apps"
+	ln -s "$_mozappdir/browser/icons/mozicon128.png" \
+		"$pkgdir/usr/share/icons/hicolor/128x128/apps/$pkgname.png"
+
+
+	install -Dm644 "$srcdir"/$pkgname.desktop \
+		-t "$pkgdir"/usr/share/applications/
+
+	# Replace duplicate binary with wrapper
+	rm "$pkgdir"/usr/bin/$pkgname
+	
+	install -Dm755 /dev/stdin "$pkgdir"/usr/bin/$pkgname <<- EOF
+	#!/bin/sh
+	
+	export LD_LIBRARY_PATH="$_mozappdir:\$LD_LIBRARY_PATH"
+	exec $_mozappdir/$pkgname "\$@"
+	EOF
+	
+	rm -f "$pkgdir"/$_mozappdir/$pkgname-bin
+	ln -sf /usr/bin/$pkgname "$pkgdir"/$_mozappdir/$pkgname-bin	
+}
+
+dev() {
+    pkgdesc="Development files for PaleMoon"
+
+	mkdir -p "$subpkgdir"/usr
+    mv -f "$pkgdir"/usr/include "$subpkgdir"/usr
+}
+
+
+
+sha512sums="
+f3fac2d589a458fcb1d54c8fefecf8d07cee79e06272308c00d719a1a5d8ae72819d104e36157ebca3ce28b7a0130d7701dd5186c7bade6832954e48bddb48b1  35.0.3_Release.tar.gz
+60b4849a92e3e231eecb9c3334e7a8f1ebfaaab45314898306a88a795d48414f91f065426e30a969c2350639796a5c41a8050b6f956d4cc9c98f8eecd037244f  RB_20261027.tar.gz
+c1119b0b3a9bef8c5cc38cbed8c2363da5fe7e1f8bf6a589ceacc625c917ffed62e8016874a3100de5f6e788f066f6f3b967cdf45968548b716f219da9ad1381  mozconfig
+2671f426a65e0780f8538e02b23d3331b44367b9fb6c3c4fee973b9e29c1cd7a61ccaec21bd9b2880a0a6b242ec6faad18b0cc366be5c93e7120c109dab138a0  palemoon.desktop
+"

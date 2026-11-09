@@ -1,0 +1,12 @@
+#!/bin/sh
+
+cat >&2 <<'EOF'
+NOTE: KMS capture (such as capturing the entire screen) requires
+CAP_SYS_ADMIN for gsr-kms-server. X11 per-window capture and
+Wayland portal capture do not require it.
+
+To enable KMS capture, run as root:
+    setcap cap_sys_admin+ep /usr/bin/gsr-kms-server
+EOF
+
+exit 0

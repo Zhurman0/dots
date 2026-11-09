@@ -1,0 +1,44 @@
+# Contributor: Jakub Jirutka <jakub@jirutka.cz>
+# Contributor: Maarten van Gompel <proycon@anaproy.nl>
+# Maintainer: Patrycja Rosa <alpine@ptrcnull.me>
+pkgname=sfwbar
+pkgver=1.0_beta17_git101326
+pkgrel=0
+pkgdesc="S* Floating Window Bar"
+_commit="9e3e92491cde3cab7f85b08c2bb0fe87b92a7dab"
+
+url="https://github.com/LBCrion/sfwbar"
+arch="all"
+license="GPL-3.0-only AND MIT"
+
+makedepends="
+	meson
+	gtk+3.0-dev
+	gtk-layer-shell-dev
+	json-c-dev
+	pulseaudio-dev
+	pipewire-dev
+	alsa-lib-dev
+	py3-docutils
+	"
+sonameprefix="$pkgname:"
+subpackages="$pkgname-doc"
+source="$pkgname-$_commit.zip::https://github.com/LBCrion/sfwbar/archive/$_commit.zip"
+
+builddir="$srcdir/$pkgname-$_commit"
+options="!check"  # no tests provided
+
+
+build() {
+	abuild-meson -Db_lto=true . output
+	meson compile -C output
+}
+
+package() {
+	DESTDIR="$pkgdir" meson install --no-rebuild -C output
+}
+
+
+sha512sums="
+e5f84b0f39878e45d5abd875bc93c4e67334ab99023a89de4e310799eeda00add83038e57639f62d749fc3e9d33f1c8df9763fcde84ce93c67db8d87a8583104  sfwbar-9e3e92491cde3cab7f85b08c2bb0fe87b92a7dab.zip
+"

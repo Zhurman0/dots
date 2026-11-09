@@ -1,0 +1,41 @@
+# Contributor: Zhurman <svyat0063@gmail.com>
+# Maintainer: Zhurman <svyat0063@gmail.com>
+pkgname=gpu-screen-recorder-gtk
+pkgver=5.8.1
+pkgrel=1
+pkgdesc="Gtk frontend to gpu-screen-recorder"
+url="https://git.dec05eba.com/gpu-screen-recorder-gtk/about/"
+
+arch="all"
+license="GPL-3.0-only"
+
+# !check: project doesn't provides any tests
+options="!check"
+makedepends="
+	meson
+	pkgconfig
+	gtk+3.0-dev
+	libx11-dev
+	libayatana-appindicator-dev
+	desktop-file-utils
+	gtk-update-icon-cache
+"
+
+source="https://dec05eba.com/snapshot/gpu-screen-recorder-gtk.git.$pkgver.tar.gz"
+builddir="$srcdir/"
+
+
+build() {
+	abuild-meson build
+
+	meson compile -C build
+}
+
+package() {
+	DESTDIR="${pkgdir}/" meson install -C build
+}
+
+
+sha512sums="
+d5aa9d2a5fd27d93f4ae6413a5330e6f3a816c4c1025365452cb5d4bf74bfb1e7fe8416d0df8cf6e0752d9ea3e0627cf9f111a7096d0c5d4483df0d3ee5729b9  gpu-screen-recorder-gtk.git.5.8.1.tar.gz
+"
