@@ -16,8 +16,8 @@ in {
                 "custom/language_label",
                 "niri/language",
                 "custom/separator",
-                "custom/pulseaudio_label",
-                "pulseaudio"
+                "custom/wireplumber_label",
+                "wireplumber"
             ],
 
             "modules-center": [
@@ -81,11 +81,11 @@ in {
                 "expand":    false
             },
 
-            "custom/pulseaudio_label": {
+            "custom/wireplumber_label": {
                 "format": "Vol"
             },
 
-            "pulseaudio": {
+            "wireplumber": {
                 "format":       "{volume}%",
                 "format-muted": "---",
                 "scroll-step":  5,
@@ -138,7 +138,7 @@ in {
         }
 
         #custom-language_label,
-        #custom-pulseaudio_label,
+        #custom-wireplumber_label,
         #custom-cpu_label,
         #custom-memory_label {
             color:       ${colors.prAlt};

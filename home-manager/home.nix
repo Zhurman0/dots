@@ -10,7 +10,7 @@
         
         ./sh/fish.nix
         ./sh/fastfetch.nix
-        
+
         ./mod/git.nix
     ];
 
